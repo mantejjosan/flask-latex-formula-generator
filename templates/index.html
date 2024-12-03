@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX Formula Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+        <h1 class="text-3xl font-semibold text-center text-indigo-600 mb-6">LaTeX Formula Generator</h1>
+
+        <form id="latexForm" class="space-y-6">
+            <div>
+                <label for="text" class="block text-lg font-medium text-gray-700">Enter your text:</label>
+                <textarea id="text" name="text" rows="4" class="mt-2 p-3 w-full border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
+
+            <button type="button" onclick="generateLatex()" class="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Generate LaTeX
+            </button>
+        </form>
+
+        <div class="mt-8">
+            <h3 class="text-xl font-medium text-gray-800">Generated LaTeX:</h3>
+            <p id="result" class="text-lg text-gray-900 bg-gray-100 p-4 rounded-md mt-2"></p>
+        </div>
+
+        <div class="mt-6 space-x-4">
+            <button onclick="copyToClipboard()" class="py-2 px-4 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 focus:outline-none">
+                Copy as Text
+            </button>
+            <button onclick="downloadSVG()" class="py-2 px-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none">
+                Save as SVG
+            </button>
+            <button onclick="downloadPNG()" class="py-2 px-4 bg-yellow-600 text-white rounded-lg shadow-md hover:bg-yellow-700 focus:outline-none">
+                Save as PNG
+            </button>
+        </div>
+
+        <footer class="mt-8 text-center text-sm text-gray-600">
+            <p>Checkout <a href="https://github.com/mantejjosan" target="_blank" class="text-indigo-600 hover:underline">mantejjosan</a> on GitHub</p>
+        </footer>
+    </div>
+
+    <script>
+        async function generateLatex() {
+            const text = document.getElementById('text').value;
+            const response = await fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('result').innerText = data.latex;
+            } else {
+                alert('Error generating LaTeX');
+            }
+        }
+
+        function copyToClipboard() {
+            const resultText = document.getElementById('result').innerText;
+            navigator.clipboard.writeText(resultText)
+                .then(() => alert('LaTeX copied to clipboard!'))
+                .catch(() => alert('Failed to copy text.'));
+        }
+
+        function downloadSVG() {
+            const resultText = document.getElementById('result').innerText;
+            const blob = new Blob([resultText], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'latex-formula.svg';
+            a.click();
+        }
+
+        function downloadPNG() {
+            const resultText = document.getElementById('result').innerText;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            // Assuming you're converting the LaTeX formula to an image here.
+            // For now, it's just a placeholder for actual logic to convert LaTeX to PNG.
+            canvas.width = 500;
+            canvas.height = 500;
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText(resultText, 50, 50);  // This is just for demo; replace with actual conversion logic
+            const imgData = canvas.toDataURL("image/png");
+            const a = document.createElement('a');
+            a.href = imgData;
+            a.download = 'latex-formula.png';
+            a.click();
+        }
+    </script>
+</body>
+</html>
