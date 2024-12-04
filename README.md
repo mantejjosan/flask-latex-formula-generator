@@ -18,13 +18,13 @@ Ensure you have the following installed:
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
+   git clone https://github.com/mantejjosan/flask-latex-formula-generator.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd your-repo-name
+   cd flask-latex-formula-generator
    ```
 
 3. Create and activate a virtual environment (if not already done):
